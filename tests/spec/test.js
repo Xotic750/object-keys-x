@@ -57,6 +57,26 @@ describe('objectKeys', function () {
   }
 
   var keys = objectKeys(obj);
+  it('should not throw for null or undefined', function () {
+    expect(function () {
+      objectKeys();
+    }).toThrow();
+
+    expect(function () {
+      objectKeys(void 0);
+    }).toThrow();
+
+    expect(function () {
+      objectKeys(null);
+    }).toThrow();
+  });
+
+  it('should not throw for non-objects', function () {
+    expect(objectKeys(1)).toEqual([]);
+    expect(objectKeys(true)).toEqual([]);
+    expect(objectKeys('')).toEqual([]);
+  });
+
   it('should have correct length', function () {
     expect(keys.length).toBe(7);
   });

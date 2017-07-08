@@ -33,19 +33,17 @@ Requires ES3 or above.
 **Copyright**: Xotic750  
 <a name="exp_module_object-keys-x--module.exports"></a>
 
-### `module.exports` ⇒ <code>\*</code> ⏏
-This method is just a placeholder.
+### `module.exports` ⇒ <code>Array</code> ⏏
+This method returns an array of a given object's own enumerable properties,
+in the same order as that provided by a for...in loop (the difference being
+that a for-in loop enumerates properties in the prototype chain as well).
 
 **Kind**: Exported member  
-**Returns**: <code>\*</code> - The target.  
-**Throws**:
-
-- <code>Error</code> If target is not undefined.
-
+**Returns**: <code>Array</code> - An array of strings that represent all the enumerable properties of the given object.  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [target] | <code>\*</code> | The target. |
+| obj | <code>\*</code> | The object of which the enumerable own properties are to be returned. |
 
 **Example**  
 ```js

@@ -39,6 +39,8 @@ var originalKeys = Object.keys;
 var objectKeys;
 var keysWorksWithArguments;
 var keysHasArgumentsLengthBug;
+var worksWithPrimitives;
+var toObject;
 
 if (originalKeys) {
   try {
@@ -52,23 +54,38 @@ if (originalKeys) {
       return arguments.length !== 1 || argKeys.length !== 1 || argKeys[0] !== 1;
     }(1));
 
-    if (keysWorksWithArguments === false || keysHasArgumentsLengthBug) {
+    worksWithPrimitives = (function () {
+      return originalKeys(1).length === 0;
+    }(1));
+
+    if (keysWorksWithArguments === false || keysHasArgumentsLengthBug || worksWithPrimitives === false) {
       var slice = require('array-slice-x');
       var isArguments = require('is-arguments');
+      toObject = require('to-object-x');
       objectKeys = function keys(object) {
-        return originalKeys(isArguments(object) ? slice(object) : object);
+        return originalKeys(isArguments(object) ? slice(object) : toObject(object));
       };
     }
   } catch (e) {}
 }
 
+objectKeys = objectKeys || originalKeys;
+if (!objectKeys) {
+  var shim = require('object-keys');
+  toObject = require('to-object-x');
+  objectKeys = function keys(object) {
+    return shim(toObject(object));
+  };
+}
+
 /**
- * This method is just a placeholder.
+ * This method returns an array of a given object's own enumerable properties,
+ * in the same order as that provided by a for...in loop (the difference being
+ * that a for-in loop enumerates properties in the prototype chain as well).
  *
- * @param {*} [target] The target.
- * @throws {Error} If target is not undefined.
- * @return {*} The target.
+ * @param {*} obj The object of which the enumerable own properties are to be returned.
+ * @return {Array} An array of strings that represent all the enumerable properties of the given object.
  * @example
  * var placeHolder = require('object-keys-x');
  */
-module.exports = objectKeys || originalKeys || require('object-keys');
+module.exports = objectKeys;
