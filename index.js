@@ -1,6 +1,6 @@
 /**
  * @file An ES6 Object.keys shim.
- * @version 1.1.0
+ * @version 1.2.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -10,45 +10,38 @@
 'use strict';
 
 var originalKeys = Object.keys;
-var objectKeys;
-var keysWorksWithArguments;
-var keysHasArgumentsLengthBug;
-var worksWithPrimitives;
+var keysWorksWithArguments = false;
+var keysHasArgumentsLengthBug = true;
+var worksWithPrimitives = false;
 var toObject;
 
-if (originalKeys) {
-  try {
-    keysWorksWithArguments = (function () {
-      // Safari 5.0 bug
-      return originalKeys(arguments).length === 2;
-    }(1, 2));
-
-    keysHasArgumentsLengthBug = (function () {
-      var argKeys = originalKeys(arguments);
-      return arguments.length !== 1 || argKeys.length !== 1 || argKeys[0] !== 1;
-    }(1));
-
-    worksWithPrimitives = (function () {
-      return originalKeys(1).length === 0;
-    }(1));
-
-    if (keysWorksWithArguments === false || keysHasArgumentsLengthBug || worksWithPrimitives === false) {
-      var slice = require('array-slice-x');
-      var isArguments = require('is-arguments');
-      toObject = require('to-object-x');
-      objectKeys = function keys(object) {
-        return originalKeys(isArguments(object) ? slice(object) : toObject(object));
-      };
-    }
-  } catch (e) {}
+if (Boolean(originalKeys) === false) {
+  originalKeys = require('object-keys');
 }
 
-objectKeys = objectKeys || originalKeys;
-if (!objectKeys) {
-  var shim = require('object-keys');
+try {
+  keysWorksWithArguments = (function () {
+    // Safari 5.0 bug
+    return originalKeys(arguments).length === 2;
+  }(1, 2));
+
+  keysHasArgumentsLengthBug = (function () {
+    var argKeys = originalKeys(arguments);
+    return arguments.length !== 1 || argKeys.length !== 1 || argKeys[0] !== 1;
+  }(1));
+
+  worksWithPrimitives = (function () {
+    return originalKeys(1).length === 0;
+  }(1));
+} catch (e) {}
+
+var objectKeys;
+if (keysWorksWithArguments === false || keysHasArgumentsLengthBug || worksWithPrimitives === false) {
+  var slice = require('array-slice-x');
+  var isArguments = require('is-arguments');
   toObject = require('to-object-x');
   objectKeys = function keys(object) {
-    return shim(toObject(object));
+    return originalKeys(isArguments(object) ? slice(object) : toObject(object));
   };
 }
 
@@ -74,4 +67,4 @@ if (!objectKeys) {
  *
  * objectKeys(obj); // ['arr', 'bool', 'null', 'num', 'obj', 'str', 'undefined']
  */
-module.exports = objectKeys;
+module.exports = objectKeys || originalKeys;
