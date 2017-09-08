@@ -1,6 +1,6 @@
 /**
  * @file An ES6 Object.keys shim.
- * @version 2.0.0
+ * @version 2.1.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -9,7 +9,6 @@
 
 'use strict';
 
-var attempt = require('attempt-x');
 var toObject = require('to-object-x');
 var nativeKeys = typeof Object.keys === 'function' && Object.keys;
 
@@ -20,6 +19,7 @@ var worksWithRegex;
 var worksWithArgs;
 var worksWithStr;
 if (nativeKeys) {
+  var attempt = require('attempt-x');
   var isCorrectRes = function _isCorrectRes(r, length) {
     return r.threw === false && r.value && r.value.length === length;
   };
