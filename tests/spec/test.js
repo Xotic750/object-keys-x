@@ -57,7 +57,7 @@ describe('objectKeys', function () {
   }
 
   var keys = objectKeys(obj);
-  it('should not throw for null or undefined', function () {
+  it('should throw for null or undefined', function () {
     expect(function () {
       objectKeys();
     }).toThrow();
@@ -132,18 +132,6 @@ describe('objectKeys', function () {
     });
   });
 
-  // ES6 objectKeys does not require this throw
-  xit('should throw error for non object', function () {
-    var e = {};
-    expect(function () {
-      try {
-        objectKeys(42);
-      } catch (err) {
-        throw e;
-      }
-    }).toThrow(e);
-  });
-
   describe('enumerating over non-enumerable properties', function () {
     it('has no enumerable keys on a Function', function () {
       var Foo = function () {};
@@ -177,6 +165,12 @@ describe('objectKeys', function () {
     actual.sort();
     expected.sort();
     expect(actual).toEqual(expected);
+  });
+
+  it('works with regexs', function () {
+    var x = /a/g;
+    var actual = objectKeys(x).sort();
+    expect(actual).toEqual([]);
   });
 
   ifWindowIt('can serialize all objects on the `window`', function () {

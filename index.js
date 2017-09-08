@@ -1,6 +1,6 @@
 /**
  * @file An ES6 Object.keys shim.
- * @version 1.3.0
+ * @version 2.0.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -9,43 +9,100 @@
 
 'use strict';
 
-var isArguments = require('is-arguments');
+var attempt = require('attempt-x');
 var toObject = require('to-object-x');
-var originalKeys = Object.keys;
+var nativeKeys = typeof Object.keys === 'function' && Object.keys;
 
-try {
-  var arr = originalKeys({ a: 1, b: 2 });
-  if (arr.length !== 2 || arr[0] !== 'a' || arr[1] !== 'b') {
-    throw new Error('failed keys');
-  }
-} catch (ignore) {
-  originalKeys = require('object-keys');
-}
+var isWorking;
+var throwsWithNull;
+var worksWithPrim;
+var worksWithRegex;
+var worksWithArgs;
+var worksWithStr;
+if (nativeKeys) {
+  var isCorrectRes = function _isCorrectRes(r, length) {
+    return r.threw === false && r.value && r.value.length === length;
+  };
 
-var keysWorksWithArguments = (function () {
-  // Safari 5.0 bug
-  return originalKeys(arguments).length === 2;
-}(1, 2));
-
-var keysHasArgumentsLengthBug = (function () {
-  var argKeys = originalKeys(arguments);
-  return arguments.length !== 1 || argKeys.length !== 1 || argKeys[0] !== 1;
-}(1));
-
-var objectKeys;
-if (!keysWorksWithArguments || keysHasArgumentsLengthBug) {
-  var arraySlice = Array.prototype.slice;
-  objectKeys = function keys(object) {
-    var obj = toObject(object);
-    if (isArguments(object)) {
-      return originalKeys(arraySlice.call(obj));
+  var testObj = { a: 1, b: 2 };
+  var res = attempt(nativeKeys, testObj);
+  if (isCorrectRes(res, 2)) {
+    var forRes = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (var key in testObj) {
+      forRes[forRes.length] = key;
     }
 
-    return originalKeys(obj);
-  };
+    isWorking = res.value[0] === forRes[0] && res.value[1] === forRes[1];
+  }
+
+  var either;
+  if (isWorking) {
+    either = function _either(r, a, b) {
+      var x = r.value[0];
+      var y = r.value[1];
+      return (x === a && y === b) || (x === b && y === a);
+    };
+
+    testObj = Object('a');
+    testObj.y = 1;
+    res = attempt(nativeKeys, testObj);
+    isWorking = isCorrectRes(res, 2) && either(res, '0', 'y');
+  }
+
+  if (isWorking) {
+    throwsWithNull = attempt(nativeKeys, null).threw;
+    worksWithPrim = isCorrectRes(attempt(nativeKeys, 42), 0);
+    worksWithRegex = attempt(nativeKeys, /a/g).threw === false;
+
+    res = attempt(nativeKeys, (function () {
+      return arguments;
+    }(1, 2)));
+
+    worksWithArgs = isCorrectRes(res, 2) && either(res, '0', '1');
+
+    res = attempt(nativeKeys, Object('ab'));
+    worksWithStr = isCorrectRes(res, 2) && either(res, '0', '1');
+  }
+}
+
+var objectKeys;
+if (isWorking) {
+  if (throwsWithNull && worksWithPrim && worksWithRegex && worksWithArgs && worksWithStr) {
+    objectKeys = nativeKeys;
+  } else {
+    var isArguments = worksWithArgs !== true && require('is-arguments');
+    var arraySlice = isArguments && require('array-like-slice-x');
+    var splitIfBoxed = worksWithStr !== true && require('split-if-boxed-bug-x');
+    var isString = splitIfBoxed && require('is-string');
+    var isRegexp = worksWithRegex !== true && require('is-regexp-x');
+    var has = isRegexp && require('has-own-property-x');
+
+    objectKeys = function keys(object) {
+      var obj = toObject ? toObject(object) : object;
+      if (isArguments && isArguments(obj)) {
+        obj = arraySlice(obj);
+      } else if (isString && isString(obj)) {
+        obj = splitIfBoxed(obj);
+      } else if (isRegexp && isRegexp(obj)) {
+        var regexKeys = [];
+        // eslint-disable-next-line no-restricted-syntax
+        for (var k in obj) {
+          if (has(obj, k)) {
+            regexKeys[regexKeys.length] = k;
+          }
+        }
+
+        return regexKeys;
+      }
+
+      return nativeKeys(obj);
+    };
+  }
 } else {
+  var objKeys = require('object-keys');
   objectKeys = function keys(object) {
-    return originalKeys(toObject(object));
+    return objKeys(toObject(object));
   };
 }
 
