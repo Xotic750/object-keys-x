@@ -1,6 +1,6 @@
 /**
  * @file An ES6 Object.keys shim.
- * @version 2.2.0
+ * @version 2.3.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -20,30 +20,22 @@ var worksWithArgs;
 var worksWithStr;
 if (nativeKeys) {
   var attempt = require('attempt-x');
+  var isArray = require('is-array-x');
   var isCorrectRes = function _isCorrectRes(r, length) {
-    return r.threw === false && r.value && r.value.length === length;
+    return r.threw === false && isArray(r.value) && r.value.length === length;
+  };
+
+  var either = function _either(r, a, b) {
+    var x = r.value[0];
+    var y = r.value[1];
+    return (x === a && y === b) || (x === b && y === a);
   };
 
   var testObj = { a: 1, b: 2 };
   var res = attempt(nativeKeys, testObj);
-  if (isCorrectRes(res, 2)) {
-    var forRes = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (var key in testObj) {
-      forRes[forRes.length] = key;
-    }
+  isWorking = isCorrectRes(res, 2) && either(res, 'a', 'b');
 
-    isWorking = res.value[0] === forRes[0] && res.value[1] === forRes[1];
-  }
-
-  var either;
   if (isWorking) {
-    either = function _either(r, a, b) {
-      var x = r.value[0];
-      var y = r.value[1];
-      return (x === a && y === b) || (x === b && y === a);
-    };
-
     testObj = Object('a');
     testObj.y = 1;
     res = attempt(nativeKeys, testObj);
