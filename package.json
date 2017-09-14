@@ -1,6 +1,6 @@
 {
   "name": "object-keys-x",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "An ES6 Object.keys shim.",
   "homepage": "https://github.com/Xotic750/object-keys-x",
   "author": {
@@ -35,7 +35,7 @@
     "has-own-property-x": "^3.1.1",
     "is-arguments": "^1.0.2",
     "is-array-x": "^1.1.1",
-    "is-regexp-x": "^2.1.0",
+    "is-regexp-x": "^2.2.0",
     "is-string": "^1.0.4",
     "object-keys": "^1.0.11",
     "split-if-boxed-bug-x": "^1.0.0",
