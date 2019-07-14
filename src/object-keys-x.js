@@ -7,32 +7,33 @@
  * @module object-keys-x
  */
 
-'use strict';
+const toObject = require('to-object-x');
 
-var toObject = require('to-object-x');
-var nativeKeys = typeof Object.keys === 'function' && Object.keys;
+const nativeKeys = typeof Object.keys === 'function' && Object.keys;
 
-var isWorking;
-var throwsWithNull;
-var worksWithPrim;
-var worksWithRegex;
-var worksWithArgs;
-var worksWithStr;
+let isWorking;
+let throwsWithNull;
+let worksWithPrim;
+let worksWithRegex;
+let worksWithArgs;
+let worksWithStr;
+
 if (nativeKeys) {
-  var attempt = require('attempt-x');
-  var isArray = require('is-array-x');
-  var isCorrectRes = function _isCorrectRes(r, length) {
+  const attempt = require('attempt-x');
+  const isArray = require('is-array-x');
+  const isCorrectRes = function _isCorrectRes(r, length) {
     return r.threw === false && isArray(r.value) && r.value.length === length;
   };
 
-  var either = function _either(r, a, b) {
-    var x = r.value[0];
-    var y = r.value[1];
+  const either = function _either(r, a, b) {
+    const x = r.value[0];
+    const y = r.value[1];
+
     return (x === a && y === b) || (x === b && y === a);
   };
 
-  var testObj = { a: 1, b: 2 };
-  var res = attempt(nativeKeys, testObj);
+  let testObj = {a: 1, b: 2};
+  let res = attempt(nativeKeys, testObj);
   isWorking = isCorrectRes(res, 2) && either(res, 'a', 'b');
 
   if (isWorking) {
@@ -47,9 +48,12 @@ if (nativeKeys) {
     worksWithPrim = isCorrectRes(attempt(nativeKeys, 42), 0);
     worksWithRegex = attempt(nativeKeys, /a/g).threw === false;
 
-    res = attempt(nativeKeys, (function () {
-      return arguments;
-    }(1, 2)));
+    res = attempt(
+      nativeKeys,
+      (function() {
+        return arguments;
+      })(1, 2),
+    );
 
     worksWithArgs = isCorrectRes(res, 2) && either(res, '0', '1');
 
@@ -58,28 +62,30 @@ if (nativeKeys) {
   }
 }
 
-var objectKeys;
+let objectKeys;
+
 if (isWorking) {
   if (throwsWithNull && worksWithPrim && worksWithRegex && worksWithArgs && worksWithStr) {
     objectKeys = nativeKeys;
   } else {
-    var isArguments = worksWithArgs !== true && require('is-arguments');
-    var arraySlice = isArguments && require('array-like-slice-x');
-    var splitIfBoxed = worksWithStr !== true && require('split-if-boxed-bug-x');
-    var isString = splitIfBoxed && require('is-string');
-    var isRegexp = worksWithRegex !== true && require('is-regexp-x');
-    var has = isRegexp && require('has-own-property-x');
+    const isArguments = worksWithArgs !== true && require('is-arguments');
+    const arraySlice = isArguments && require('array-like-slice-x');
+    const splitIfBoxed = worksWithStr !== true && require('split-if-boxed-bug-x');
+    const isString = splitIfBoxed && require('is-string');
+    const isRegexp = worksWithRegex !== true && require('is-regexp-x');
+    const has = isRegexp && require('has-own-property-x');
 
     objectKeys = function keys(object) {
-      var obj = toObject ? toObject(object) : object;
+      let obj = toObject ? toObject(object) : object;
+
       if (isArguments && isArguments(obj)) {
         obj = arraySlice(obj);
       } else if (isString && isString(obj)) {
         obj = splitIfBoxed(obj);
       } else if (isRegexp && isRegexp(obj)) {
-        var regexKeys = [];
+        const regexKeys = [];
         // eslint-disable-next-line no-restricted-syntax
-        for (var k in obj) {
+        for (const k in obj) {
           if (has(obj, k)) {
             regexKeys[regexKeys.length] = k;
           }
@@ -92,7 +98,7 @@ if (isWorking) {
     };
   }
 } else {
-  var objKeys = require('object-keys');
+  const objKeys = require('object-keys');
   objectKeys = function keys(object) {
     return objKeys(toObject(object));
   };
@@ -103,8 +109,8 @@ if (isWorking) {
  * in the same order as that provided by a for...in loop (the difference being
  * that a for-in loop enumerates properties in the prototype chain as well).
  *
- * @param {*} obj The object of which the enumerable own properties are to be returned.
- * @return {Array} An array of strings that represent all the enumerable properties of the given object.
+ * @param {*} obj - The object of which the enumerable own properties are to be returned.
+ * @returns {Array} An array of strings that represent all the enumerable properties of the given object.
  * @example
  * var objectKeys = require('object-keys-x');
  *
