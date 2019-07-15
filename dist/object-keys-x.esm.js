@@ -8,31 +8,31 @@ import isString from 'is-string';
 import isRegexp from 'is-regexp-x';
 import has from 'has-own-property-x';
 import objKeys from 'object-keys';
-
-const ObjectCtr = {}.constructor;
-const nativeKeys = typeof ObjectCtr.keys === 'function' && ObjectCtr.keys;
-
-let isWorking;
-let throwsWithNull;
-let worksWithPrim;
-let worksWithRegex;
-let worksWithArgs;
-let worksWithStr;
+var ObjectCtr = {}.constructor;
+var nativeKeys = typeof ObjectCtr.keys === 'function' && ObjectCtr.keys;
+var isWorking;
+var throwsWithNull;
+var worksWithPrim;
+var worksWithRegex;
+var worksWithArgs;
+var worksWithStr;
 
 if (nativeKeys) {
-  const isCorrectRes = function _isCorrectRes(r, length) {
+  var isCorrectRes = function _isCorrectRes(r, length) {
     return r.threw === false && isArray(r.value) && r.value.length === length;
   };
 
-  const either = function _either(r, a, b) {
-    const x = r.value[0];
-    const y = r.value[1];
-
-    return (x === a && y === b) || (x === b && y === a);
+  var either = function _either(r, a, b) {
+    var x = r.value[0];
+    var y = r.value[1];
+    return x === a && y === b || x === b && y === a;
   };
 
-  let testObj = {a: 1, b: 2};
-  let res = attempt(nativeKeys, testObj);
+  var testObj = {
+    a: 1,
+    b: 2
+  };
+  var res = attempt(nativeKeys, testObj);
   isWorking = isCorrectRes(res, 2) && either(res, 'a', 'b');
 
   if (isWorking) {
@@ -46,22 +46,15 @@ if (nativeKeys) {
     throwsWithNull = attempt(nativeKeys, null).threw;
     worksWithPrim = isCorrectRes(attempt(nativeKeys, 42), 0);
     worksWithRegex = attempt(nativeKeys, /a/g).threw === false;
-
-    res = attempt(
-      nativeKeys,
-      (function getArgs() {
-        /* eslint-disable-next-line prefer-rest-params */
-        return arguments;
-      })(1, 2),
-    );
-
+    res = attempt(nativeKeys, function getArgs() {
+      /* eslint-disable-next-line prefer-rest-params */
+      return arguments;
+    }(1, 2));
     worksWithArgs = isCorrectRes(res, 2) && either(res, '0', '1');
-
     res = attempt(nativeKeys, Object('ab'));
     worksWithStr = isCorrectRes(res, 2) && either(res, '0', '1');
   }
 }
-
 /**
  * This method returns an array of a given object's own enumerable properties,
  * in the same order as that provided by a for...in loop (the difference being
@@ -70,23 +63,26 @@ if (nativeKeys) {
  * @param {*} obj - The object of which the enumerable own properties are to be returned.
  * @returns {Array} An array of strings that represent all the enumerable properties of the given object.
  */
-let objectKeys;
+
+
+var objectKeys;
 
 if (isWorking) {
   if (throwsWithNull && worksWithPrim && worksWithRegex && worksWithArgs && worksWithStr) {
     objectKeys = nativeKeys;
   } else {
     objectKeys = function keys(object) {
-      let obj = toObject ? toObject(object) : object;
+      var obj = toObject ? toObject(object) : object;
 
       if (worksWithArgs !== true && isArguments(obj)) {
         obj = arraySlice(obj);
       } else if (worksWithStr !== true && isString(obj)) {
         obj = splitIfBoxed(obj);
       } else if (worksWithRegex !== true && isRegexp(obj)) {
-        const regexKeys = [];
+        var regexKeys = [];
         /* eslint-disable-next-line no-restricted-syntax */
-        for (const key in obj) {
+
+        for (var key in obj) {
           // noinspection JSUnfilteredForInLoop
           if (has(obj, key)) {
             regexKeys[regexKeys.length] = key;
@@ -105,6 +101,7 @@ if (isWorking) {
   };
 }
 
-const ok = objectKeys;
-
+var ok = objectKeys;
 export default ok;
+
+//# sourceMappingURL=object-keys-x.esm.js.map
