@@ -29,7 +29,7 @@ describe('objectKeys', function() {
     num: 42,
     obj: {},
     str: 'boz',
-    /* eslint-disable-next-line no-void */
+
     undefined: void 0,
   };
 
@@ -47,7 +47,6 @@ describe('objectKeys', function() {
     }).toThrowErrorMatchingSnapshot();
 
     expect(function() {
-      /* eslint-disable-next-line no-void */
       objectKeys(void 0);
     }).toThrowErrorMatchingSnapshot();
 
@@ -72,11 +71,10 @@ describe('objectKeys', function() {
     it('works with an arguments object', function() {
       expect.assertions(3);
       (function() {
-        /* eslint-disable-next-line prefer-rest-params */
         expect(arguments).toHaveLength(3);
-        /* eslint-disable-next-line prefer-rest-params */
+
         expect(objectKeys(arguments)).toHaveLength(arguments.length);
-        /* eslint-disable-next-line prefer-rest-params */
+
         expect(objectKeys(arguments)).toStrictEqual(['0', '1', '2']);
       })(1, 2, 3);
     });
@@ -92,7 +90,7 @@ describe('objectKeys', function() {
       };
 
       FakeArguments.prototype.length = 3;
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       FakeArguments.prototype.callee = function() {};
 
       const fakeOldArguments = new FakeArguments(['a', 'b', 'c']);
@@ -122,7 +120,7 @@ describe('objectKeys', function() {
   describe('enumerating over non-enumerable properties', function() {
     it('has no enumerable keys on a Function', function() {
       expect.assertions(1);
-      /* eslint-disable-next-line lodash/prefer-noop */
+
       const Foo = function() {};
 
       expect(objectKeys(Foo.prototype)).toStrictEqual([]);
@@ -190,7 +188,6 @@ describe('objectKeys', function() {
 
     /* eslint-disable-next-line guard-for-in,no-restricted-syntax */
     for (const k in window) {
-      /* eslint-disable-next-line no-void */
       exception = void 0;
       windowItemKeys = exception;
 
