@@ -2,7 +2,7 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017",
-  "date": "2019-08-07T01:33:26.982Z",
+  "date": "2019-08-07T22:23:56.033Z",
   "describe": "",
   "description": "An ES6 Object.keys shim.",
   "file": "object-keys-x.js",
