@@ -18,11 +18,11 @@ var worksWithArgs;
 var worksWithStr;
 
 if (nativeKeys) {
-  var isCorrectRes = function _isCorrectRes(r, length) {
+  var isCorrectRes = function isCorrectRes(r, length) {
     return r.threw === false && isArray(r.value) && r.value.length === length;
   };
 
-  var either = function _either(r, a, b) {
+  var either = function either(r, a, b) {
     var x = r.value[0];
     var y = r.value[1];
     return x === a && y === b || x === b && y === a;
@@ -55,6 +55,42 @@ if (nativeKeys) {
     worksWithStr = isCorrectRes(res, 2) && either(res, '0', '1');
   }
 }
+
+export var patched = function keys(object) {
+  var obj = toObject ? toObject(object) : object;
+
+  if (worksWithArgs !== true && isArguments(obj)) {
+    obj = arraySlice(obj);
+  } else if (worksWithStr !== true && isString(obj)) {
+    obj = splitIfBoxed(obj);
+  } else if (worksWithRegex !== true && isRegexp(obj)) {
+    var regexKeys = [];
+    /* eslint-disable-next-line no-restricted-syntax */
+
+    for (var key in obj) {
+      // noinspection JSUnfilteredForInLoop
+      if (has(obj, key)) {
+        regexKeys[regexKeys.length] = key;
+      }
+    }
+
+    return regexKeys;
+  }
+
+  return nativeKeys(obj);
+};
+export var implementation = function keys(object) {
+  return objKeys(toObject(object));
+};
+var objectKeys;
+
+if (isWorking) {
+  if (throwsWithNull && worksWithPrim && worksWithRegex && worksWithArgs && worksWithStr) {
+    objectKeys = nativeKeys;
+  } else {
+    objectKeys = patched;
+  }
+}
 /**
  * This method returns an array of a given object's own enumerable properties,
  * in the same order as that provided by a for...in loop (the difference being
@@ -65,43 +101,7 @@ if (nativeKeys) {
  */
 
 
-var objectKeys;
-
-if (isWorking) {
-  if (throwsWithNull && worksWithPrim && worksWithRegex && worksWithArgs && worksWithStr) {
-    objectKeys = nativeKeys;
-  } else {
-    objectKeys = function keys(object) {
-      var obj = toObject ? toObject(object) : object;
-
-      if (worksWithArgs !== true && isArguments(obj)) {
-        obj = arraySlice(obj);
-      } else if (worksWithStr !== true && isString(obj)) {
-        obj = splitIfBoxed(obj);
-      } else if (worksWithRegex !== true && isRegexp(obj)) {
-        var regexKeys = [];
-        /* eslint-disable-next-line no-restricted-syntax */
-
-        for (var key in obj) {
-          // noinspection JSUnfilteredForInLoop
-          if (has(obj, key)) {
-            regexKeys[regexKeys.length] = key;
-          }
-        }
-
-        return regexKeys;
-      }
-
-      return nativeKeys(obj);
-    };
-  }
-} else {
-  objectKeys = function keys(object) {
-    return objKeys(toObject(object));
-  };
-}
-
-var ok = objectKeys;
-export default ok;
+var $objectKeys = isWorking ? objectKeys : implementation;
+export default $objectKeys;
 
 //# sourceMappingURL=object-keys-x.esm.js.map

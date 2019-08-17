@@ -1,7 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`objectKeys should throw for null or undefined 1`] = `"Cannot convert undefined or null to object"`;
+exports[`objectKeys 0 should throw for null or undefined 1`] = `"Cannot call method on undefined"`;
 
-exports[`objectKeys should throw for null or undefined 2`] = `"Cannot convert undefined or null to object"`;
+exports[`objectKeys 0 should throw for null or undefined 2`] = `"Cannot call method on undefined"`;
 
-exports[`objectKeys should throw for null or undefined 3`] = `"Cannot convert undefined or null to object"`;
+exports[`objectKeys 0 should throw for null or undefined 3`] = `"Cannot call method on null"`;
+
+exports[`objectKeys 1 should throw for null or undefined 1`] = `"Cannot call method on undefined"`;
+
+exports[`objectKeys 1 should throw for null or undefined 2`] = `"Cannot call method on undefined"`;
+
+exports[`objectKeys 1 should throw for null or undefined 3`] = `"Cannot call method on null"`;
+
+exports[`objectKeys 2 should throw for null or undefined 1`] = `"Cannot convert undefined or null to object"`;
+
+exports[`objectKeys 2 should throw for null or undefined 2`] = `"Cannot convert undefined or null to object"`;
+
+exports[`objectKeys 2 should throw for null or undefined 3`] = `"Cannot convert undefined or null to object"`;

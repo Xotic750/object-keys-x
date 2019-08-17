@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017",
-  "date": "2019-08-15T19:00:17.406Z",
+  "date": "2019-08-17T14:16:25.816Z",
   "describe": "",
   "description": "An ES6 Object.keys shim.",
   "file": "object-keys-x.js",
-  "hash": "a45a61709123070806cd",
+  "hash": "95e4ddc5c13ca24f54a1",
   "license": "MIT",
   "version": "3.1.0"
 }
@@ -2608,6 +2608,8 @@ var object_keys = __webpack_require__(6);
 var object_keys_default = /*#__PURE__*/__webpack_require__.n(object_keys);
 
 // CONCATENATED MODULE: ./dist/object-keys-x.esm.js
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "patched", function() { return patched; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "implementation", function() { return object_keys_x_esm_implementation; });
 
 
 
@@ -2628,11 +2630,11 @@ var worksWithArgs;
 var object_keys_x_esm_worksWithStr;
 
 if (nativeKeys) {
-  var isCorrectRes = function _isCorrectRes(r, length) {
+  var object_keys_x_esm_isCorrectRes = function isCorrectRes(r, length) {
     return r.threw === false && is_array_x_esm(r.value) && r.value.length === length;
   };
 
-  var either = function _either(r, a, b) {
+  var either = function either(r, a, b) {
     var x = r.value[0];
     var y = r.value[1];
     return x === a && y === b || x === b && y === a;
@@ -2643,26 +2645,62 @@ if (nativeKeys) {
     b: 2
   };
   var object_keys_x_esm_res = attempt_x_esm(nativeKeys, testObj);
-  object_keys_x_esm_isWorking = isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, 'a', 'b');
+  object_keys_x_esm_isWorking = object_keys_x_esm_isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, 'a', 'b');
 
   if (object_keys_x_esm_isWorking) {
     testObj = Object('a');
     testObj.y = 1;
     object_keys_x_esm_res = attempt_x_esm(nativeKeys, testObj);
-    object_keys_x_esm_isWorking = isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, '0', 'y');
+    object_keys_x_esm_isWorking = object_keys_x_esm_isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, '0', 'y');
   }
 
   if (object_keys_x_esm_isWorking) {
     throwsWithNull = attempt_x_esm(nativeKeys, null).threw;
-    object_keys_x_esm_worksWithPrim = isCorrectRes(attempt_x_esm(nativeKeys, 42), 0);
+    object_keys_x_esm_worksWithPrim = object_keys_x_esm_isCorrectRes(attempt_x_esm(nativeKeys, 42), 0);
     worksWithRegex = attempt_x_esm(nativeKeys, /a/g).threw === false;
     object_keys_x_esm_res = attempt_x_esm(nativeKeys, function getArgs() {
       /* eslint-disable-next-line prefer-rest-params */
       return arguments;
     }(1, 2));
-    worksWithArgs = isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, '0', '1');
+    worksWithArgs = object_keys_x_esm_isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, '0', '1');
     object_keys_x_esm_res = attempt_x_esm(nativeKeys, Object('ab'));
-    object_keys_x_esm_worksWithStr = isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, '0', '1');
+    object_keys_x_esm_worksWithStr = object_keys_x_esm_isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, '0', '1');
+  }
+}
+
+var patched = function keys(object) {
+  var obj = to_object_x_esm ? to_object_x_esm(object) : object;
+
+  if (worksWithArgs !== true && is_arguments_default()(obj)) {
+    obj = array_like_slice_x_esm(obj);
+  } else if (object_keys_x_esm_worksWithStr !== true && is_string_default()(obj)) {
+    obj = split_if_boxed_bug_x_esm(obj);
+  } else if (worksWithRegex !== true && is_regexp_x_esm(obj)) {
+    var regexKeys = [];
+    /* eslint-disable-next-line no-restricted-syntax */
+
+    for (var key in obj) {
+      // noinspection JSUnfilteredForInLoop
+      if (has_own_property_x_esm(obj, key)) {
+        regexKeys[regexKeys.length] = key;
+      }
+    }
+
+    return regexKeys;
+  }
+
+  return nativeKeys(obj);
+};
+var object_keys_x_esm_implementation = function keys(object) {
+  return object_keys_default()(to_object_x_esm(object));
+};
+var objectKeys;
+
+if (object_keys_x_esm_isWorking) {
+  if (throwsWithNull && object_keys_x_esm_worksWithPrim && worksWithRegex && worksWithArgs && object_keys_x_esm_worksWithStr) {
+    objectKeys = nativeKeys;
+  } else {
+    objectKeys = patched;
   }
 }
 /**
@@ -2675,44 +2713,8 @@ if (nativeKeys) {
  */
 
 
-var objectKeys;
-
-if (object_keys_x_esm_isWorking) {
-  if (throwsWithNull && object_keys_x_esm_worksWithPrim && worksWithRegex && worksWithArgs && object_keys_x_esm_worksWithStr) {
-    objectKeys = nativeKeys;
-  } else {
-    objectKeys = function keys(object) {
-      var obj = to_object_x_esm ? to_object_x_esm(object) : object;
-
-      if (worksWithArgs !== true && is_arguments_default()(obj)) {
-        obj = array_like_slice_x_esm(obj);
-      } else if (object_keys_x_esm_worksWithStr !== true && is_string_default()(obj)) {
-        obj = split_if_boxed_bug_x_esm(obj);
-      } else if (worksWithRegex !== true && is_regexp_x_esm(obj)) {
-        var regexKeys = [];
-        /* eslint-disable-next-line no-restricted-syntax */
-
-        for (var key in obj) {
-          // noinspection JSUnfilteredForInLoop
-          if (has_own_property_x_esm(obj, key)) {
-            regexKeys[regexKeys.length] = key;
-          }
-        }
-
-        return regexKeys;
-      }
-
-      return nativeKeys(obj);
-    };
-  }
-} else {
-  objectKeys = function keys(object) {
-    return object_keys_default()(to_object_x_esm(object));
-  };
-}
-
-var ok = objectKeys;
-/* harmony default export */ var object_keys_x_esm = __webpack_exports__["default"] = (ok);
+var $objectKeys = object_keys_x_esm_isWorking ? objectKeys : object_keys_x_esm_implementation;
+/* harmony default export */ var object_keys_x_esm = __webpack_exports__["default"] = ($objectKeys);
 
 
 
