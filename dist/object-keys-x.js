@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017",
-  "date": "2019-08-28T15:36:13.552Z",
+  "date": "2019-08-28T17:35:44.538Z",
   "describe": "",
   "description": "An ES6 Object.keys shim.",
   "file": "object-keys-x.js",
   "hash": "21ec131817476513ab6d",
   "license": "MIT",
-  "version": "3.1.1"
+  "version": "3.1.2"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
