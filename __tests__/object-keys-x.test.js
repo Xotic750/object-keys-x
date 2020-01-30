@@ -162,7 +162,7 @@ const ifWindowIt = typeof window === 'undefined' ? xit : it;
     });
 
     ifWindowIt('can serialize all objects on the `window`', function() {
-      expect.assertions(62);
+      expect.assertions(64);
       let windowItemKeys;
       let exception;
       const excludedKeys = [
